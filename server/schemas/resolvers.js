@@ -7,7 +7,7 @@ const resolvers = {
     me: (parent, args, context) => {
       return context.user;
     },
-  },
+},
   Mutation: {
     login: async (parent, { email, password }) => {
       const user = await User.findOne({
@@ -22,7 +22,7 @@ const resolvers = {
       if (!correctPw) {
         throw new Error("Wrong password!");
       }
-      const token = signToken(user);
+      const token = signToken({ username: user.username, email: user.email, _id: user._id });
       return { token, user };
     },
 
