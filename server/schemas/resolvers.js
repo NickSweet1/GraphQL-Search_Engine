@@ -26,6 +26,7 @@ const resolvers = {
       return { token, user };
     },
   },
+
   createUser: async (parent, { username, email, password }) => {
     const user = await User.create({ username, email, password });
 
@@ -36,7 +37,40 @@ const resolvers = {
     const token = signToken(user);
     return { token, user };
   },
-};
+
+  saveBook: async (parent, { book }, context) => {
+    const { user } = context;
+
+    try {
+      const updatedUser = await User.findOneAndUpdate(
+        { _id: user._id },
+        {
+          $addToSet: { savedBooks: book } 
+        },
+        { new: true, runValidators: true }
+      )
+      return updatedUser;
+    } catch (err) {
+      throw new Error(err.message);
+    }
+},
+
+  deleteBook: async (parent, { bookId }, context) => {
+    const { user } = context;
+
+    try {
+      const updatedUser = await User.findOneAndUpdate(
+        { _id: user._id },
+        { $pull: { savedBooks: bookId }},
+        { new: true } 
+      )
+      return updatedUser;
+    } catch (err) {
+      throw new Error(err.message);
+      }
+    }
+  };
+
 
 
 module.exports = resolvers;
