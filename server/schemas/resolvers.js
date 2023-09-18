@@ -4,14 +4,21 @@ const { signToken } = require("../utils/auth");
 
 const resolvers = {
   Query: {
-    me: (parent, args, context) => {
-      return context.user;
+    me: async (parent, args, context) => {
+      console.log(context.user);
+      if (context.user) {
+      let user = await User.findById(context.user._id);
+      console.log(user);
+      return user;
+      } 
+      throw new AuthenticationError("Not logged in");
+      
     },
 },
   Mutation: {
     login: async (parent, { email, password }) => {
       const user = await User.findOne({
-        $or: [{ username: email }, { email }],
+        email
       });
       if (!user) {
         throw new Error("Can't find this user");
@@ -22,7 +29,7 @@ const resolvers = {
       if (!correctPw) {
         throw new Error("Wrong password!");
       }
-      const token = signToken({ username: user.username, email: user.email, _id: user._id });
+      const token = signToken(user);
       return { token, user };
     },
 

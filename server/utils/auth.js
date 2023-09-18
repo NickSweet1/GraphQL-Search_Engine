@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 
 // set token secret and expiration date
 const secret = 'mysecretsshhhhh';
-const expiration = '2h';
+const expiration = '5h';
 
 module.exports = {
   // function for our authenticated routes
@@ -16,7 +16,6 @@ module.exports = {
     }
 
     if (!token) {
-      console.log('No token found.');
       return req;
     }
 
@@ -34,6 +33,7 @@ module.exports = {
 
   signToken: function ({ username, email, _id }) {
     const payload = { username, email, _id };
+    console.log(payload);
     return jwt.sign({ data: payload }, secret, { expiresIn: expiration });
   },
 };
